@@ -14,15 +14,17 @@
 
   async function loadRanking() {
     try {
-      // Cache-bust so updates show up quickly
       const url = config.SHEET_CSV_URL + (config.SHEET_CSV_URL.includes("?") ? "&" : "?") + "t=" + Date.now();
       const res = await fetch(url, { cache: "no-store" });
       if (!res.ok) throw new Error("Sheet responded with " + res.status);
       const text = await res.text();
       const rows = parseCSV(text);
       if (rows.length < 2) throw new Error("Sheet looks empty.");
-      const data = normalizeRows(rows);
-      renderRanking(data);
+      const items = rows
+        .slice(1)
+        .map((r) => (r[0] || "").trim())
+        .filter((name) => name.length > 0);
+      renderRanking(items);
       updatedEl.textContent = "Last checked " + formatTime(new Date());
     } catch (err) {
       console.error(err);
@@ -37,17 +39,13 @@
     }
     const list = document.createElement("div");
     list.className = "ranking-list";
-    items.forEach((item, i) => {
+    items.forEach((name, i) => {
       const rank = i + 1;
       const card = document.createElement("div");
       card.className = "rank-card" + (rank === 1 ? " gold" : rank === 2 ? " silver" : rank === 3 ? " bronze" : "");
       card.innerHTML =
         '<div class="rank-number">' + rank + '</div>' +
-        '<div class="rank-body">' +
-          '<h2 class="rank-name">' + escapeHtml(item.name) + '</h2>' +
-          (item.notes ? '<p class="rank-notes">' + escapeHtml(item.notes) + '</p>' : '') +
-        '</div>' +
-        (item.score ? '<div class="rank-score">' + escapeHtml(item.score) + '</div>' : '');
+        '<div class="rank-body"><h2 class="rank-name">' + escapeHtml(name) + '</h2></div>';
       list.appendChild(card);
     });
     rankingEl.innerHTML = "";
@@ -60,8 +58,7 @@
       '<h2>One step to go ✨</h2>' +
       '<p>The site is live, but it needs your Google Sheet link.</p>' +
       '<ol>' +
-        '<li>Create a Google Sheet with columns: <code>Water</code>, <code>Score</code>, <code>Notes</code></li>' +
-        '<li>Put them in the order you want them ranked (row 2 = #1)</li>' +
+        '<li>Create a Google Sheet with one column listing each water (e.g. "La Croix Tangerine"). Row order = ranking.</li>' +
         '<li>File → Share → <strong>Publish to web</strong></li>' +
         '<li>Pick <strong>Comma-separated values (.csv)</strong> and click Publish</li>' +
         '<li>Paste the URL into <code>config.js</code></li>' +
@@ -78,32 +75,7 @@
       "</div>";
   }
 
-  // Turn header-based rows into {name, score, notes} objects
-  function normalizeRows(rows) {
-    const headers = rows[0].map((h) => h.trim().toLowerCase());
-    const iName = findCol(headers, ["water", "name", "brand", "drink"]);
-    const iScore = findCol(headers, ["score", "rating", "stars"]);
-    const iNotes = findCol(headers, ["notes", "comment", "comments", "note", "review"]);
-
-    const body = rows.slice(1);
-    return body
-      .map((r) => ({
-        name: (iName >= 0 ? r[iName] : r[0]) || "",
-        score: iScore >= 0 ? (r[iScore] || "").trim() : "",
-        notes: iNotes >= 0 ? (r[iNotes] || "").trim() : ""
-      }))
-      .filter((item) => item.name.trim().length > 0);
-  }
-
-  function findCol(headers, candidates) {
-    for (const c of candidates) {
-      const i = headers.indexOf(c);
-      if (i >= 0) return i;
-    }
-    return -1;
-  }
-
-  // Minimal RFC4180-ish CSV parser (handles quoted fields, commas, newlines)
+  // Minimal RFC4180-ish CSV parser
   function parseCSV(text) {
     const rows = [];
     let row = [];
