@@ -2,11 +2,6 @@
   const config = window.SPARKLING_CONFIG || {};
   const rankingEl = document.getElementById("ranking");
   const updatedEl = document.getElementById("updated");
-  const podcastLink = document.getElementById("podcast-link");
-
-  if (podcastLink && config.PODCAST_URL) {
-    podcastLink.href = config.PODCAST_URL;
-  }
 
   spawnBubbles(18);
 

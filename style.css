@@ -287,6 +287,30 @@ footer a {
 
 footer a:hover { text-decoration: underline; }
 
+.platforms {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.platforms a {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 147, 209, 0.2);
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.platforms a:hover {
+  background: #ffffff;
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+
 /* Mobile */
 @media (max-width: 540px) {
   header { padding-top: 40px; }

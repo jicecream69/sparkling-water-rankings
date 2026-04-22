@@ -7,6 +7,5 @@
 //
 // Leave this empty and the site will show setup instructions on screen.
 window.SPARKLING_CONFIG = {
-  SHEET_CSV_URL: "",
-  PODCAST_URL: "https://theunscheduledceo.com"
+  SHEET_CSV_URL: ""
 };
