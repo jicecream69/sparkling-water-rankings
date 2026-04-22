@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sparkling Water Rankings · The Unscheduled CEO</title>
+  <meta name="description" content="The definitive (and slightly unhinged) sparkling water rankings from The Unscheduled CEO podcast." />
+  <meta property="og:title" content="Sparkling Water Rankings" />
+  <meta property="og:description" content="The definitive (and slightly unhinged) sparkling water rankings from The Unscheduled CEO podcast." />
+  <meta name="theme-color" content="#7ad7ff" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9C%A8%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="bubbles" aria-hidden="true"></div>
+
+  <header>
+    <div class="kicker">The Unscheduled CEO presents</div>
+    <h1>Sparkling Water <span class="nowrap">Rankings <span class="sparkle">✨</span></span></h1>
+    <p class="tagline">The definitive (and completely biased) standings. Updated from the CEO's desk, whenever he gets to it.</p>
+    <p class="updated" id="updated"></p>
+  </header>
+
+  <main id="ranking">
+    <div class="loading">
+      <div class="loader"></div>
+      <p>Pouring the rankings...</p>
+    </div>
+  </main>
+
+  <footer>
+    <p>Rankings move. Tastes change. So does the CEO's schedule.</p>
+    <p class="small">A side project of <a href="#" id="podcast-link">The Unscheduled CEO</a> podcast.</p>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

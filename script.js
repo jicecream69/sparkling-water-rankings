@@ -1,0 +1,165 @@
+(function () {
+  const config = window.SPARKLING_CONFIG || {};
+  const rankingEl = document.getElementById("ranking");
+  const updatedEl = document.getElementById("updated");
+  const podcastLink = document.getElementById("podcast-link");
+
+  if (podcastLink && config.PODCAST_URL) {
+    podcastLink.href = config.PODCAST_URL;
+  }
+
+  spawnBubbles(18);
+
+  if (!config.SHEET_CSV_URL) {
+    renderSetup();
+    return;
+  }
+
+  loadRanking();
+
+  async function loadRanking() {
+    try {
+      // Cache-bust so updates show up quickly
+      const url = config.SHEET_CSV_URL + (config.SHEET_CSV_URL.includes("?") ? "&" : "?") + "t=" + Date.now();
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) throw new Error("Sheet responded with " + res.status);
+      const text = await res.text();
+      const rows = parseCSV(text);
+      if (rows.length < 2) throw new Error("Sheet looks empty.");
+      const data = normalizeRows(rows);
+      renderRanking(data);
+      updatedEl.textContent = "Last checked " + formatTime(new Date());
+    } catch (err) {
+      console.error(err);
+      renderError(err.message);
+    }
+  }
+
+  function renderRanking(items) {
+    if (!items.length) {
+      rankingEl.innerHTML = '<div class="loading"><p>No rankings yet. Add some rows to the sheet!</p></div>';
+      return;
+    }
+    const list = document.createElement("div");
+    list.className = "ranking-list";
+    items.forEach((item, i) => {
+      const rank = i + 1;
+      const card = document.createElement("div");
+      card.className = "rank-card" + (rank === 1 ? " gold" : rank === 2 ? " silver" : rank === 3 ? " bronze" : "");
+      card.innerHTML =
+        '<div class="rank-number">' + rank + '</div>' +
+        '<div class="rank-body">' +
+          '<h2 class="rank-name">' + escapeHtml(item.name) + '</h2>' +
+          (item.notes ? '<p class="rank-notes">' + escapeHtml(item.notes) + '</p>' : '') +
+        '</div>' +
+        (item.score ? '<div class="rank-score">' + escapeHtml(item.score) + '</div>' : '');
+      list.appendChild(card);
+    });
+    rankingEl.innerHTML = "";
+    rankingEl.appendChild(list);
+  }
+
+  function renderSetup() {
+    rankingEl.innerHTML =
+      '<div class="setup">' +
+      '<h2>One step to go ✨</h2>' +
+      '<p>The site is live, but it needs your Google Sheet link.</p>' +
+      '<ol>' +
+        '<li>Create a Google Sheet with columns: <code>Water</code>, <code>Score</code>, <code>Notes</code></li>' +
+        '<li>Put them in the order you want them ranked (row 2 = #1)</li>' +
+        '<li>File → Share → <strong>Publish to web</strong></li>' +
+        '<li>Pick <strong>Comma-separated values (.csv)</strong> and click Publish</li>' +
+        '<li>Paste the URL into <code>config.js</code></li>' +
+      '</ol>' +
+      '</div>';
+  }
+
+  function renderError(msg) {
+    rankingEl.innerHTML =
+      '<div class="error">' +
+      "<strong>Couldn't load the rankings.</strong><br>" +
+      escapeHtml(msg) +
+      "<br><br>Double-check that your Google Sheet is published to the web as CSV." +
+      "</div>";
+  }
+
+  // Turn header-based rows into {name, score, notes} objects
+  function normalizeRows(rows) {
+    const headers = rows[0].map((h) => h.trim().toLowerCase());
+    const iName = findCol(headers, ["water", "name", "brand", "drink"]);
+    const iScore = findCol(headers, ["score", "rating", "stars"]);
+    const iNotes = findCol(headers, ["notes", "comment", "comments", "note", "review"]);
+
+    const body = rows.slice(1);
+    return body
+      .map((r) => ({
+        name: (iName >= 0 ? r[iName] : r[0]) || "",
+        score: iScore >= 0 ? (r[iScore] || "").trim() : "",
+        notes: iNotes >= 0 ? (r[iNotes] || "").trim() : ""
+      }))
+      .filter((item) => item.name.trim().length > 0);
+  }
+
+  function findCol(headers, candidates) {
+    for (const c of candidates) {
+      const i = headers.indexOf(c);
+      if (i >= 0) return i;
+    }
+    return -1;
+  }
+
+  // Minimal RFC4180-ish CSV parser (handles quoted fields, commas, newlines)
+  function parseCSV(text) {
+    const rows = [];
+    let row = [];
+    let field = "";
+    let i = 0;
+    let inQuotes = false;
+    while (i < text.length) {
+      const ch = text[i];
+      if (inQuotes) {
+        if (ch === '"') {
+          if (text[i + 1] === '"') { field += '"'; i += 2; continue; }
+          inQuotes = false; i++; continue;
+        }
+        field += ch; i++; continue;
+      }
+      if (ch === '"') { inQuotes = true; i++; continue; }
+      if (ch === ",") { row.push(field); field = ""; i++; continue; }
+      if (ch === "\r") { i++; continue; }
+      if (ch === "\n") { row.push(field); rows.push(row); row = []; field = ""; i++; continue; }
+      field += ch; i++;
+    }
+    if (field.length > 0 || row.length > 0) { row.push(field); rows.push(row); }
+    return rows;
+  }
+
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function formatTime(d) {
+    return d.toLocaleString(undefined, { hour: "numeric", minute: "2-digit", month: "short", day: "numeric" });
+  }
+
+  function spawnBubbles(count) {
+    const wrap = document.querySelector(".bubbles");
+    if (!wrap) return;
+    for (let i = 0; i < count; i++) {
+      const b = document.createElement("div");
+      b.className = "bubble";
+      const size = Math.round(10 + Math.random() * 60);
+      b.style.width = size + "px";
+      b.style.height = size + "px";
+      b.style.left = Math.random() * 100 + "%";
+      b.style.animationDuration = (10 + Math.random() * 14) + "s";
+      b.style.animationDelay = -Math.random() * 20 + "s";
+      wrap.appendChild(b);
+    }
+  }
+})();

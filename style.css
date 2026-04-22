@@ -1,0 +1,311 @@
+:root {
+  --bg-1: #e8f8ff;
+  --bg-2: #c3ecff;
+  --bg-3: #9adfff;
+  --ink: #0b2b3d;
+  --ink-soft: #3a6278;
+  --card: #ffffff;
+  --accent: #0093d1;
+  --gold: #f4c430;
+  --silver: #c9d3da;
+  --bronze: #d9844a;
+  --shadow: 0 10px 30px rgba(10, 60, 90, 0.12);
+  --shadow-lift: 0 20px 50px rgba(10, 60, 90, 0.18);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+body {
+  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  color: var(--ink);
+  background: linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 50%, var(--bg-3) 100%);
+  background-attachment: fixed;
+  overflow-x: hidden;
+  line-height: 1.5;
+  position: relative;
+}
+
+/* Floating bubbles background */
+.bubbles {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bubble {
+  position: absolute;
+  bottom: -100px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(255,255,255,0.3));
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  animation: rise linear infinite;
+  opacity: 0.7;
+}
+
+@keyframes rise {
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  10% { opacity: 0.7; }
+  50% { transform: translateY(-50vh) translateX(20px); }
+  90% { opacity: 0.7; }
+  100% { transform: translateY(-110vh) translateX(-20px); opacity: 0; }
+}
+
+/* Layout */
+header, main, footer {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+header {
+  padding-top: 64px;
+  padding-bottom: 32px;
+  text-align: center;
+}
+
+.kicker {
+  font-family: 'Space Grotesk', sans-serif;
+  text-transform: uppercase;
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+h1 {
+  font-family: 'Fredoka', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(40px, 8vw, 72px);
+  line-height: 1.05;
+  margin: 0 0 16px;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+
+.nowrap { white-space: nowrap; }
+
+.sparkle {
+  display: inline-block;
+  animation: sparkle 2.2s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes sparkle {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.15) rotate(12deg); }
+}
+
+.tagline {
+  font-size: 17px;
+  color: var(--ink-soft);
+  max-width: 520px;
+  margin: 0 auto 8px;
+}
+
+.updated {
+  font-size: 13px;
+  color: var(--ink-soft);
+  opacity: 0.7;
+  margin: 8px 0 0;
+}
+
+/* Ranking list */
+main {
+  padding-bottom: 48px;
+}
+
+.ranking-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.rank-card {
+  background: var(--card);
+  border-radius: 20px;
+  padding: 20px 22px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 20px;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid rgba(255,255,255,0.8);
+}
+
+.rank-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lift);
+}
+
+.rank-number {
+  font-family: 'Fredoka', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 44px;
+  line-height: 1;
+  color: var(--accent);
+  min-width: 62px;
+  text-align: center;
+  background: linear-gradient(135deg, #e8f8ff, #c3ecff);
+  border-radius: 14px;
+  padding: 12px 10px;
+  letter-spacing: -0.03em;
+}
+
+.rank-card.gold .rank-number {
+  background: linear-gradient(135deg, #fff4c7, #f4c430);
+  color: #7a5a00;
+}
+.rank-card.silver .rank-number {
+  background: linear-gradient(135deg, #f0f4f7, #c9d3da);
+  color: #3a4a56;
+}
+.rank-card.bronze .rank-number {
+  background: linear-gradient(135deg, #ffe4cc, #d9844a);
+  color: #6b3a1a;
+}
+
+.rank-body {
+  min-width: 0;
+}
+
+.rank-name {
+  font-family: 'Fredoka', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 22px;
+  color: var(--ink);
+  margin: 0 0 4px;
+  line-height: 1.2;
+}
+
+.rank-notes {
+  font-size: 14px;
+  color: var(--ink-soft);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.rank-score {
+  font-family: 'Fredoka', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  color: var(--accent);
+  padding: 6px 14px;
+  background: rgba(0, 147, 209, 0.08);
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* States */
+.loading {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--ink-soft);
+}
+
+.loader {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(0, 147, 209, 0.2);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  margin: 0 auto 16px;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.setup {
+  background: var(--card);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: var(--shadow);
+  margin-top: 24px;
+}
+
+.setup h2 {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 24px;
+  margin: 0 0 16px;
+}
+
+.setup ol {
+  padding-left: 20px;
+  line-height: 1.7;
+}
+
+.setup code {
+  background: #f0f7fb;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 13px;
+  color: var(--accent);
+}
+
+.error {
+  background: #fff4f4;
+  border: 1px solid #ffd1d1;
+  border-radius: 16px;
+  padding: 20px;
+  color: #8b2a2a;
+  margin-top: 24px;
+}
+
+/* Footer */
+footer {
+  padding: 40px 24px 60px;
+  text-align: center;
+  color: var(--ink-soft);
+  font-size: 14px;
+}
+
+footer .small {
+  font-size: 13px;
+  opacity: 0.7;
+  margin-top: 4px;
+}
+
+footer a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+footer a:hover { text-decoration: underline; }
+
+/* Mobile */
+@media (max-width: 540px) {
+  header { padding-top: 40px; }
+  .rank-card {
+    grid-template-columns: auto 1fr;
+    gap: 14px;
+    padding: 16px;
+  }
+  .rank-score {
+    grid-column: 2;
+    justify-self: start;
+    font-size: 18px;
+    padding: 4px 12px;
+  }
+  .rank-number {
+    font-size: 34px;
+    min-width: 52px;
+    padding: 10px 8px;
+  }
+  .rank-name { font-size: 18px; }
+  .rank-notes { font-size: 13px; }
+}
