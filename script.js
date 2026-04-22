@@ -23,7 +23,7 @@
         .map((r) => (r[0] || "").trim())
         .filter((name) => name.length > 0);
       renderRanking(items);
-      updatedEl.textContent = "Last checked " + formatTime(new Date());
+      updatedEl.textContent = "Last revised · " + formatTime(new Date());
     } catch (err) {
       console.error(err);
       renderError(err.message);
@@ -40,15 +40,11 @@
     items.forEach((name, i) => {
       const rank = i + 1;
       const card = document.createElement("div");
-      card.className = "rank-card" + (rank === 1 ? " gold" : rank === 2 ? " silver" : rank === 3 ? " bronze" : "");
-      const starPrefix = rank <= 3 ? '<span class="rank-star" aria-hidden="true">' + (rank === 1 ? '★' : '☆') + '</span>' : '';
-      const starburst = rank === 1
-        ? '<div class="starburst" aria-hidden="true"><div><div class="line1">top</div><div class="line2">PICK!</div></div></div>'
-        : '';
+      card.className = "rank-card";
+      const rankStr = String(rank).padStart(2, "0");
       card.innerHTML =
-        '<div class="rank-number">' + rank + '</div>' +
-        '<div class="rank-body"><h2 class="rank-name">' + starPrefix + escapeHtml(name) + '</h2></div>' +
-        starburst;
+        '<div class="rank-number">' + rankStr + '</div>' +
+        '<h2 class="rank-name">' + escapeHtml(name) + '</h2>';
       list.appendChild(card);
     });
     rankingEl.innerHTML = "";
@@ -58,13 +54,13 @@
   function renderSetup() {
     rankingEl.innerHTML =
       '<div class="setup">' +
-      '<h2>One step to go ✨</h2>' +
-      '<p>The site is live, but it needs your Google Sheet link.</p>' +
+      '<h2>One step remaining.</h2>' +
+      '<p>The list is ready, but it still needs a source.</p>' +
       '<ol>' +
-        '<li>Create a Google Sheet with one column listing each water (e.g. "La Croix Tangerine"). Row order = ranking.</li>' +
+        '<li>Create a Google Sheet with one column listing each water. Row order sets the ranking.</li>' +
         '<li>File → Share → <strong>Publish to web</strong></li>' +
-        '<li>Pick <strong>Comma-separated values (.csv)</strong> and click Publish</li>' +
-        '<li>Paste the URL into <code>config.js</code></li>' +
+        '<li>Choose <strong>Comma-separated values (.csv)</strong> and publish.</li>' +
+        '<li>Paste the URL into <code>config.js</code>.</li>' +
       '</ol>' +
       '</div>';
   }
