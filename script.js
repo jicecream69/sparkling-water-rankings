@@ -3,8 +3,6 @@
   const rankingEl = document.getElementById("ranking");
   const updatedEl = document.getElementById("updated");
 
-  spawnBubbles(18);
-
   if (!config.SHEET_CSV_URL) {
     renderSetup();
     return;
@@ -43,9 +41,14 @@
       const rank = i + 1;
       const card = document.createElement("div");
       card.className = "rank-card" + (rank === 1 ? " gold" : rank === 2 ? " silver" : rank === 3 ? " bronze" : "");
+      const starPrefix = rank <= 3 ? '<span class="rank-star" aria-hidden="true">' + (rank === 1 ? '★' : '☆') + '</span>' : '';
+      const starburst = rank === 1
+        ? '<div class="starburst" aria-hidden="true"><div><div class="line1">top</div><div class="line2">PICK!</div></div></div>'
+        : '';
       card.innerHTML =
         '<div class="rank-number">' + rank + '</div>' +
-        '<div class="rank-body"><h2 class="rank-name">' + escapeHtml(name) + '</h2></div>';
+        '<div class="rank-body"><h2 class="rank-name">' + starPrefix + escapeHtml(name) + '</h2></div>' +
+        starburst;
       list.appendChild(card);
     });
     rankingEl.innerHTML = "";
@@ -112,21 +115,5 @@
 
   function formatTime(d) {
     return d.toLocaleString(undefined, { hour: "numeric", minute: "2-digit", month: "short", day: "numeric" });
-  }
-
-  function spawnBubbles(count) {
-    const wrap = document.querySelector(".bubbles");
-    if (!wrap) return;
-    for (let i = 0; i < count; i++) {
-      const b = document.createElement("div");
-      b.className = "bubble";
-      const size = Math.round(10 + Math.random() * 60);
-      b.style.width = size + "px";
-      b.style.height = size + "px";
-      b.style.left = Math.random() * 100 + "%";
-      b.style.animationDuration = (10 + Math.random() * 14) + "s";
-      b.style.animationDelay = -Math.random() * 20 + "s";
-      wrap.appendChild(b);
-    }
   }
 })();
